@@ -1,12 +1,14 @@
 const searchInput = document.getElementById('searchInput');
 const resultsList = document.getElementById('resultsList');
 
-const API_KEY = 'AIzaSyAoGKTH4s0yNXFU5dcf0a5TKtvs99a0OA8'; // Your actual API key
+// Your YouTube API Key (replace if needed)
+const API_KEY = 'AIzaSyAoGKTH4s0yNXFU5dcf0a5TKtvs99a0OA8';
 const MAX_RESULTS = 5;
 
 searchInput.addEventListener('input', async function () {
   const query = searchInput.value.toLowerCase().trim();
 
+  // Require minimum 3 characters before searching
   if (query.length < 3) {
     resultsList.innerHTML = '<li>Type at least 3 characters to search...</li>';
     return;
@@ -21,6 +23,14 @@ searchInput.addEventListener('input', async function () {
 
     const data = await response.json();
 
+    // Check for API errors
+    if (!response.ok) {
+      console.error('API Error:', data);
+      resultsList.innerHTML = `<li><strong>Error:</strong> ${data.error.message}</li>`;
+      return;
+    }
+
+    // Display results if found
     if (data.items && data.items.length > 0) {
       resultsList.innerHTML = '';
       data.items.forEach(item => {
@@ -36,7 +46,7 @@ searchInput.addEventListener('input', async function () {
       resultsList.innerHTML = `<li>No results found for "${query}".</li>`;
     }
   } catch (error) {
-    resultsList.innerHTML = `<li>Error fetching data. Please try again later.</li>`;
-    console.error('YouTube API Error:', error);
+    console.error('Fetch error:', error);
+    resultsList.innerHTML = `<li>Unexpected error occurred. Please try again later.</li>`;
   }
 });
