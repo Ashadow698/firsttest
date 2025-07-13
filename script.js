@@ -2,7 +2,7 @@ const searchInput = document.getElementById('searchInput');
 const resultsList = document.getElementById('resultsList');
 
 // Your YouTube API Key (replace if needed)
-const API_KEY = 'AIzaSyAoGKTH4s0yNXFU5dcf0a5TKtvs99a0OA8';
+const API_KEY = 'AIzaSyAoGKTh4sOyNXFU5dcf0a5TKtvs99aOOA8';
 const MAX_RESULTS = 5;
 
 searchInput.addEventListener('input', async function () {
