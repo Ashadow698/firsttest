@@ -1,7 +1,10 @@
 const searchInput = document.getElementById('searchInput');
 const resultsList = document.getElementById('resultsList');
 
-searchInput.addEventListener('input', function () {
+const API_KEY = 'AIzaSyAoGKTH4s0yNXFU5dcf0a5TKtvs99a0OA8';
+const MAX_RESULTS = 5;
+
+searchInput.addEventListener('input', async function () {
   const query = searchInput.value.toLowerCase().trim();
 
   if (query.length === 0) {
@@ -9,20 +12,30 @@ searchInput.addEventListener('input', function () {
     return;
   }
 
-  // Simulated results
-  const sampleData = {
-    cooking: ['Binging with Babish', 'Joshua Weissman', 'Pro Home Cooks'],
-    tech: ['MKBHD', 'Linus Tech Tips', 'Dave2D'],
-    fitness: ['Athlean-X', 'Chloe Ting', 'Jeff Nippard'],
-    gaming: ['Jacksepticeye', 'Markiplier', 'Dream']
-  };
+  resultsList.innerHTML = '<li>Loading...</li>';
 
-  const results = sampleData[query] || ['No results found for "' + query + '". Try a different topic.'];
+  try {
+    const response = await fetch(
+      `https://www.googleapis.com/youtube/v3/search?part=snippet&type=channel&q=${encodeURIComponent(query)}&maxResults=${MAX_RESULTS}&key=${API_KEY}`
+    );
 
-  resultsList.innerHTML = '';
-  results.forEach(youtuber => {
-    const li = document.createElement('li');
-    li.textContent = youtuber;
-    resultsList.appendChild(li);
-  });
+    const data = await response.json();
+
+    if (data.items && data.items.length > 0) {
+      resultsList.innerHTML = '';
+      data.items.forEach(item => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+          <strong>${item.snippet.channelTitle}</strong><br/>
+          <em>${item.snippet.description}</em>
+        `;
+        resultsList.appendChild(li);
+      });
+    } else {
+      resultsList.innerHTML = `<li>No results found for "${query}".</li>`;
+    }
+  } catch (error) {
+    resultsList.innerHTML = `<li>Error fetching data. Please try again.</li>`;
+    console.error('YouTube API Error:', error);
+  }
 });
